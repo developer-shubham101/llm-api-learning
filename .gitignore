@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Personal / private files
+personal/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Generated output
+*.json
+!package.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+
+.venv
+venv
