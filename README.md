@@ -25,16 +25,17 @@ python 02_temperature.py
 
 ## Configuration
 
-All examples share a single config file — **change the URL or model in one place**:
+All config lives in `.env` at the project root — change values in one place:
 
-```python
-# config.py
-BASE_URL = "http://localhost:8080"
-LLM_URL  = f"{BASE_URL}/v1/chat/completions"
-MODEL    = "gemma"
+```env
+BASE_URL=http://192.168.1.5:8080
+LLM_URL=http://192.168.1.5:8080/v1/chat/completions
+MODEL=gemma
+WEATHER_API_KEY=your_key_here
 ```
 
-Every example imports from it:
+`config.py` loads it automatically via `python-dotenv`:
+
 ```python
 from config import LLM_URL, MODEL
 ```
@@ -187,13 +188,70 @@ data: [DONE]
 
 | File | Concept |
 |------|---------|
-| [`config.py`](./config.py) | Central config — base URL, model name |
+| [`.env`](./.env) | Environment config — URL, model, API keys |
+| [`config.py`](./config.py) | Loads `.env` — single import for all examples |
 | [`01_roles.py`](./01_roles.py) | `system`, `user`, `assistant` roles |
 | [`02_temperature.py`](./02_temperature.py) | `temperature` from 0 to 1.2 |
 | [`03_multi_turn.py`](./03_multi_turn.py) | Multi-turn conversation with history |
 | [`04_tokens_and_content.py`](./04_tokens_and_content.py) | `max_tokens`, `stop`, token usage |
 | [`05_structured_output.py`](./05_structured_output.py) | Forcing JSON output reliably |
 | [`06_streaming.py`](./06_streaming.py) | `stream: True` with SSE parsing |
+
+---
+
+## Tools
+
+The `Tools/` folder is a fully working AI tool-calling agent. The LLM decides which tool to use, Python executes it, and the result is fed back for a final answer.
+
+```
+User prompt → LLM picks tool → Python runs it → LLM answers
+```
+
+### Run a query
+
+```bash
+cd Tools
+python ai_tool_agent.py -p "What is the current weather in Jaipur?"
+python ai_tool_agent.py -p "What is Tesla stock price today?"
+python ai_tool_agent.py -p "What is 128 multiplied by 4?"
+python ai_tool_agent.py -p "Save a file called notes.txt with content: Hello World"
+```
+
+### Test all tools
+
+```bash
+python test_tools.py
+```
+
+### Available tools
+
+| File | Functions | Description |
+|---|---|---|
+| `tool_calculator.py` | `add`, `subtract`, `multiply`, `divide` | Basic math |
+| `tool_stock.py` | `get_stock_price(symbol)` | Latest stock price via yfinance |
+| `tool_weather.py` | `get_weather(city)` | Current weather via OpenWeatherMap |
+| `tool_file_writer.py` | `save_text_file(filename, content)` | Saves text to `generated_files/` |
+
+### Adding a new tool
+
+Create `Tools/tool_<name>.py` with a function and a docstring — auto-registered:
+
+```python
+def my_tool(param: str) -> dict:
+    """Does something useful"""
+    ...
+```
+
+### Logging
+
+Every run writes to `Tools/logs/`:
+
+| File | Content |
+|---|---|
+| `tools.log` | Warnings and errors |
+| `flow.log` | Full step-by-step execution trace |
+
+→ See [`Tools/How to use tools.md`](./Tools/How%20to%20use%20tools.md) for full details
 
 ---
 
