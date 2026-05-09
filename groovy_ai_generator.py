@@ -5,17 +5,15 @@
 # ============================================================
 
 import requests
-import requests
 import json
 import os
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+from config import LLM_URL, MODEL
 
 # ============================================================
 # CONFIG
 # ============================================================
-LLM_URL = "http://192.168.1.5:8080/v1/chat/completions"
-MODEL = "gemma"
 OUTPUT_DIR = "generated_dataset"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
